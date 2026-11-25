@@ -57,6 +57,9 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
 #dots{position:absolute;top:calc(var(--h)*.065);right:calc(var(--h)*.08);display:flex;gap:8px}
 #dots i{width:8px;height:8px;border-radius:50%;background:#555}#dots i.on{background:#fff}
 #msg{position:absolute;top:calc(var(--h)*.16);left:0;right:0;text-align:center;font-size:14px;color:#8e8e93;padding:0 20px}
+#tapme{position:absolute;left:0;right:0;bottom:calc(var(--h)*.05);text-align:center;color:#8e8e93;font-size:15px;padding:0 20px;animation:fadeT 2.5s ease-in-out infinite}
+#tapme[hidden]{display:none}
+@keyframes fadeT{50%{opacity:.4}}
 /* Nhắc xoay ngang */
 #turn{position:absolute;inset:0;z-index:5;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;padding:32px}
 #turn[hidden]{display:none}
@@ -74,6 +77,7 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
 </style>
 </head>
 <body>
+<video id="ns" muted playsinline loop preload="auto" style="position:fixed;width:1px;height:1px;opacity:0.01;pointer-events:none;left:0;top:0" src="data:video/mp4;base64,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aHJvbWFfbWU9MSB0cmVsbGlzPTAgOHg4ZGN0PTEgY3FtPTAgZGVhZHpvbmU9MjEsMTEgZmFzdF9wc2tpcD0xIGNocm9tYV9xcF9vZmZzZXQ9MCB0aHJlYWRzPTEgbG9va2FoZWFkX3RocmVhZHM9MSBzbGljZWRfdGhyZWFkcz0wIG5yPTAgZGVjaW1hdGU9MSBpbnRlcmxhY2VkPTAgYmx1cmF5X2NvbXBhdD0wIHN0aXRjaGFibGU9MSBjb25zdHJhaW5lZF9pbnRyYT0wIGJmcmFtZXM9MyBiX3B5cmFtaWQ9MiBiX2FkYXB0PTEgYl9iaWFzPTAgZGlyZWN0PTEgd2VpZ2h0Yj0xIG9wZW5fZ29wPTAgd2VpZ2h0cD0xIGtleWludD0yNTAga2V5aW50X21pbj0xIHNjZW5lY3V0PTQwIGludHJhX3JlZnJlc2g9MCByY19sb29rYWhlYWQ9MTAgcmM9Y3JmIG1idHJlZT0xIGNyZj01MS4wIHFjb21wPTAuNjAgcXBtaW49MCBxcG1heD02OSBxcHN0ZXA9NCBpcF9yYXRpbz0xLjQwIGFxPTE6MS4wMACAAAAADmWIhADftI55pf+EP3/hARggBwEYIAcBGCAHARggBwEYIAcBGCAHARggBwEYIAcAAAAIQZohGIj/voABGCAHARggBwEYIAcBGCAHARggBwEYIAcBGCAHARggBw=="></video>
 <div id="stage">
   <section class="view on" id="v0" aria-label="Tiện ích">
     <div class="w"><svg id="ana" viewBox="0 0 200 200" aria-label="Đồng hồ kim"></svg></div>
@@ -83,6 +87,7 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
     <div id="fdate"></div>
     <div id="ftime"></div>
   </section>
+  <div id="tapme">Chạm vào màn hình một lần để giữ màn hình luôn sáng</div>
   <div id="ui" class="hide">
     <button id="exit">Thoát</button>
     <div id="dots"><i class="on"></i><i></i></div>
@@ -170,6 +175,13 @@ function setView(v){
 function setNight(on){night=on;store.set('night',on?'1':'0');root.classList.toggle('night',on);$('night').setAttribute('aria-pressed',on)}
 
 function say(t){$('msg').textContent=t}
+function playVideo(){
+  const v=$('ns');if(!v||!active)return;
+  v.muted=true;v.setAttribute('muted','');v.setAttribute('playsinline','');
+  try{const p=v.play();if(p&&p.catch)p.catch(()=>{})}catch(e){}
+}
+function stopVideo(){try{$('ns').pause()}catch(e){}}
+function keepAwake(){playVideo();getLock()}
 async function getLock(){
   if(lock||!active)return;
   if(!('wakeLock' in navigator)){say('Máy không cho giữ màn sáng ở đây — hãy đặt Khóa tự động: Không bao giờ');return}
@@ -190,9 +202,9 @@ function hideUI(){$('ui').classList.add('hide');say('')}
 function exitClock(){
   active=false;hideUI();
   if(lock){lock.release().catch(()=>{});lock=null}
-  exitFull();$('paused').hidden=false;
+  stopVideo();exitFull();$('paused').hidden=false;
 }
-function resume(){active=true;$('paused').hidden=true;goFull();getLock()}
+function resume(){active=true;$('paused').hidden=true;goFull();keepAwake()}
 
 /* Chạm và vuốt (tính theo hướng ngang của khung đã xoay) */
 let p0=null;
@@ -200,17 +212,19 @@ $('stage').addEventListener('pointerdown',e=>{p0={x:e.clientX,y:e.clientY}});
 $('stage').addEventListener('pointerup',e=>{
   if(!p0)return;const dx=e.clientX-p0.x,dy=e.clientY-p0.y;p0=null;
   if(e.target.closest('button')||!active)return;
-  if(!started){started=true;goFull();getLock()}
+  if(!started){started=true;goFull();$('tapme').hidden=true}
+  keepAwake();
   const lx=rot?dy:dx,ly=rot?-dx:dy;
   if(Math.abs(lx)>50&&Math.abs(lx)>Math.abs(ly)){setView(lx<0?Math.min(1,view+1):Math.max(0,view-1));return}
   if(Math.abs(lx)<12&&Math.abs(ly)<12){$('ui').classList.contains('hide')?showUI():hideUI()}
 });
 $('exit').addEventListener('click',exitClock);
 $('resume').addEventListener('click',resume);
-$('b0').addEventListener('click',()=>{setView(0);showUI()});
+$('b0').addEventListener('click',()=>{setView(0);showUI();keepAwake()});
 $('b1').addEventListener('click',()=>{setView(1);showUI()});
 $('night').addEventListener('click',()=>{setNight(!night);showUI()});
-document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&started)getLock()});
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&started)keepAwake()});
+setInterval(()=>{if(started&&active){if(!lock)getLock();const v=$('ns');if(v&&v.paused)playVideo()}},20000);
 addEventListener('resize',layout);
 addEventListener('orientationchange',()=>setTimeout(layout,150));
 

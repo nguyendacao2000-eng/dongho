@@ -14,7 +14,9 @@
    COLOUR and TYPE: nền đen tuyền, thẻ #1c1c1e, điểm nhấn đỏ cam; chế độ đêm toàn màu đỏ mờ; chữ bo tròn hệ thống
    LAYOUT: luôn nằm ngang (xoay bằng CSS khi máy dựng đứng), vuốt ngang để đổi màn */
 :root{color-scheme:dark;--bg:#000;--ink:#fff;--sub:#8e8e93;--card:#1c1c1e;--acc:#ff453a;--h:390px;--w:844px}
-:root.night{--ink:#c9302a;--sub:#6e1813;--card:#120303;--acc:#c9302a}
+:root{--k1:#2e2e33;--k2:#1a1a1d;--kb:#3c3c42;--tray:#0f0f11;--trayb:#26262a;--crab:#e07a5f;--eye:#111;
+  --ks:min(calc(var(--h)*.29),calc((var(--w) - var(--h)*.4)/4.4));--as:calc(var(--h)*.17);--bs:max(44px,calc(var(--h)*.12))}
+:root.night{--ink:#c9302a;--sub:#6e1813;--card:#120303;--acc:#c9302a;--k1:#1c0505;--k2:#0e0202;--kb:#2e0909;--tray:#060101;--trayb:#1c0505;--crab:#c9302a;--eye:#000}
 *{box-sizing:border-box;min-width:0;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;height:100%;background:#000;overflow:hidden;overscroll-behavior:none;touch-action:none}
 body{font-family:ui-rounded,"SF Pro Rounded",system-ui,-apple-system,sans-serif;color:var(--ink);-webkit-user-select:none;user-select:none}
@@ -45,11 +47,76 @@ body{font-family:ui-rounded,"SF Pro Rounded",system-ui,-apple-system,sans-serif;
 #ftime{font-weight:700;font-variant-numeric:tabular-nums;line-height:1;letter-spacing:-.03em;white-space:nowrap;font-size:min(calc(var(--h)*.66),calc(var(--w)*.31))}
 #ftime .c{animation:blink 2s steps(1) infinite}
 @keyframes blink{50%{opacity:.35}}
+/* Bàn phím */
+#v2{flex-direction:column;justify-content:flex-start;padding:calc(var(--h)*.05) max(calc(var(--h)*.08),env(safe-area-inset-right)) calc(var(--h)*.06) max(calc(var(--h)*.08),env(safe-area-inset-left))}
+#deckhead{align-self:stretch;display:flex;justify-content:space-between;align-items:baseline;height:calc(var(--h)*.12);padding:0 4px}
+#dclock{font-weight:700;font-size:calc(var(--h)*.08);font-variant-numeric:tabular-nums}
+.stat{color:var(--sub);font-size:calc(var(--h)*.045);font-weight:600}
+.stat.ok{color:#30d158}.stat.err{color:var(--acc)}
+#deck{align-self:stretch;flex:1;min-height:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:calc(var(--h)*.04)}
+.tray{background:var(--tray);border:1px solid var(--trayb);border-radius:calc(var(--h)*.06);padding:calc(var(--h)*.03)}
+.key{all:unset;box-sizing:border-box;background:linear-gradient(180deg,var(--k1),var(--k2));border:1px solid var(--kb);box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 3px 8px rgba(0,0,0,.6);border-radius:calc(var(--h)*.045);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:calc(var(--h)*.012);color:var(--ink);cursor:pointer;transition:transform .12s,border-color .2s;min-height:44px}
+.key svg{width:calc(var(--h)*.15);height:calc(var(--h)*.15);fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.key svg .a{stroke:var(--acc)}.key svg .af{fill:var(--acc);stroke:none}
+.key small{color:var(--acc);font-weight:800;font-size:calc(var(--h)*.03);letter-spacing:.12em;line-height:1}
+.key b{color:var(--ink);font-weight:800;line-height:1;letter-spacing:-.01em}
+.key:active{transform:scale(.93)}
+.key.ok{border-color:#30d158;box-shadow:0 0 0 2px #30d15855}.key.err{border-color:var(--acc);box-shadow:0 0 0 2px #ff453a55}
+.key:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+/* Ứng dụng */
+#v2,#v3,#v4{flex-direction:column;justify-content:flex-start;padding:calc(var(--h)*.05) max(calc(var(--h)*.08),env(safe-area-inset-right)) calc(var(--h)*.06) max(calc(var(--h)*.08),env(safe-area-inset-left))}
+.dhead{align-self:stretch;display:flex;justify-content:space-between;align-items:baseline;height:calc(var(--h)*.12);padding:0 4px}
+.dtitle{font-weight:700;font-size:calc(var(--h)*.08)}
+#v3{gap:calc(var(--h)*.03)}
+#v3 .dhead{align-items:center;gap:12px}#v3 .stat{flex:1;text-align:right}
+#r1{align-self:stretch;flex:none;display:flex;align-items:center;gap:12px}
+#r1 .stat{flex:1;text-align:right}
+#apps{flex:none;display:grid;grid-template-columns:repeat(5,var(--as));grid-auto-rows:var(--as);gap:calc(var(--h)*.03);padding:calc(var(--h)*.025)}
+.key.app b{font-size:calc(var(--as)*.42)}
+#deck.tray{align-self:center;flex:none;margin:auto 0;grid-template-columns:repeat(4,var(--ks));grid-template-rows:none;grid-auto-rows:var(--ks);gap:calc(var(--h)*.035)}
+button.sq{flex:none;width:var(--bs);height:var(--bs);min-height:0;padding:0;border-radius:calc(var(--h)*.035);background:linear-gradient(180deg,var(--k1),var(--k2));border:1px solid var(--kb);box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 3px 8px rgba(0,0,0,.6);color:var(--ink);display:grid;place-items:center}
+button.sq svg{width:46%;height:46%;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+button.sq:active{transform:scale(.93)}
+/* Cua pixel */
+#lane{position:relative;flex:none;height:calc(var(--h)*.14)}
+#lane::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:repeating-linear-gradient(90deg,var(--kb) 0 6px,transparent 6px 12px)}
+#crab{position:absolute;left:0;bottom:3px;height:82%;aspect-ratio:15/10;cursor:pointer;will-change:transform}
+#crabsvg{display:block;width:100%;height:100%;color:var(--crab)}
+#cbub{position:absolute;left:92%;bottom:88%;font:800 13px ui-monospace,Menlo,monospace;color:var(--ink);background:var(--card);border:2px solid var(--kb);border-radius:4px;padding:1px 6px;white-space:nowrap}
+#cbub:empty{display:none}
+/* Claude */
+#chat{align-self:stretch;flex:1;min-height:0;display:flex;flex-direction:column;gap:calc(var(--h)*.03)}
+#clog{flex:1;min-height:0;overflow-y:auto;touch-action:pan-y;-webkit-overflow-scrolling:touch;display:flex;flex-direction:column;gap:10px;padding:4px 2px}
+.m{max-width:80%;padding:10px 14px;border-radius:18px;font-size:clamp(15px,calc(var(--h)*.045),19px);line-height:1.4;white-space:pre-wrap;overflow-wrap:anywhere;-webkit-user-select:text;user-select:text}
+.m.u{align-self:flex-end;background:var(--acc);color:#fff}
+.m.a{align-self:flex-start;background:var(--card);color:var(--ink)}
+.m.wait{color:var(--sub);animation:fadeT 1.6s ease-in-out infinite}
+.m.note{align-self:center;max-width:90%;background:none;color:var(--sub);font-size:14px;text-align:center;padding:4px}
+#cform{display:flex;gap:8px}
+#cin{flex:1;font:500 16px ui-rounded,system-ui,sans-serif;color:var(--ink);background:var(--card);border:0;border-radius:calc(var(--h)*.035);padding:0 16px;height:var(--bs);-webkit-user-select:text;user-select:text}
+#cin:focus{outline:2px solid var(--acc);outline-offset:1px}
+#cin{border:1px solid var(--kb)!important}
+#cform button[hidden]{display:none}
+#csend{background:var(--acc)!important;color:#fff!important}
+#csend:disabled{opacity:.4}
+#cmic.on{background:var(--acc);color:#fff}
+#cnew{color:var(--sub)!important}
+/* Bảng kết nối */
+#panel{position:absolute;inset:0;z-index:6;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;padding:16px}
+#panel[hidden]{display:none}
+#panel .card{background:#1c1c1e;border-radius:22px;padding:20px;width:min(460px,100%);display:flex;flex-direction:column;gap:10px;color:#fff}
+#panel .pt{font-weight:700;font-size:19px}
+#panel label{color:#8e8e93;font-size:14px}
+#panel input{font:600 17px ui-monospace,monospace;color:#fff;background:#2c2c2e;border:1px solid #3a3a3c;border-radius:12px;padding:11px 12px;min-height:44px}
+#panel input:focus{outline:2px solid #ff453a;outline-offset:1px}
+.prow{display:flex;gap:8px;flex-wrap:wrap}
+#psave{background:#ff453a}
+#pmsg{font-size:14px;color:#8e8e93;min-height:1.3em}
 /* Điều khiển */
 #ui{position:absolute;inset:0;pointer-events:none;transition:opacity .35s}
 #ui.hide{opacity:0}
 #ui:not(.hide) button{pointer-events:auto}
-button{font:600 16px ui-rounded,system-ui,sans-serif;color:#fff;background:rgba(58,58,60,.85);border:0;border-radius:24px;min-height:44px;padding:0 20px;-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+button{font:600 16px ui-rounded,system-ui,sans-serif;color:#fff;background:rgba(58,58,60,.85);border:0;border-radius:14px;min-height:44px;padding:0 20px;-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
 button:focus-visible{outline:2px solid #fff;outline-offset:2px}
 #exit{position:absolute;top:calc(var(--h)*.05);left:calc(var(--h)*.06);background:var(--acc);color:#fff}
 #bot{position:absolute;bottom:calc(var(--h)*.05);left:0;right:0;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
@@ -83,19 +150,33 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
     <div class="w"><svg id="ana" viewBox="0 0 200 200" aria-label="Đồng hồ kim"></svg></div>
     <div class="w calw"><div id="mon"></div><div id="grid"></div></div>
   </section>
-  <section class="view" id="v1" aria-label="Đồng hồ lớn">
-    <div id="fdate"></div>
-    <div id="ftime"></div>
+  <section class="view" id="v2" aria-label="Bàn phím">
+    <div class="dhead" style="justify-content:flex-end"><span class="stat"></span></div>
+    <div id="deck" class="tray"></div>
+  </section>
+  <section class="view" id="v3" aria-label="Ứng dụng và Claude">
+    <div id="r1"><div id="apps" class="tray"></div><span class="stat"></span><button id="cnew" class="sq" type="button" aria-label="Cuộc trò chuyện mới" title="Cuộc trò chuyện mới"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button></div>
+    <div id="chat">
+      <div id="clog" aria-live="polite"><div class="m note" id="cnote">Đang kết nối Claude…</div></div>
+      <div id="lane" aria-hidden="true"><div id="crab"><svg id="crabsvg" viewBox="0 0 15 10" shape-rendering="crispEdges"></svg><span id="cbub"></span></div></div>
+      <form id="cform">
+        <button type="button" id="cmic" class="sq" hidden aria-label="Nói"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8.5" y="2.5" width="7" height="12" rx="3.5" fill="currentColor" stroke="none"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3.5"/></svg></button>
+        <input id="cin" autocomplete="off" enterkeyhint="send" placeholder="Hỏi Claude, hoặc nhờ “mở Photoshop”…">
+        <button type="submit" id="csend" class="sq" disabled aria-label="Gửi"></button>
+      </form>
+    </div>
   </section>
   <div id="tapme">Chạm vào màn hình một lần để giữ màn hình luôn sáng</div>
   <div id="ui" class="hide">
     <button id="exit">Thoát</button>
-    <div id="dots"><i class="on"></i><i></i></div>
+    <div id="dots"><i class="on"></i><i></i><i></i></div>
     <div id="msg"></div>
     <div id="bot">
       <button id="b0" aria-pressed="true">Tiện ích</button>
-      <button id="b1" aria-pressed="false">Đồng hồ lớn</button>
-      <button id="night" aria-pressed="false">Chế độ đêm</button>
+      <button id="b2" aria-pressed="false">Phím</button>
+      <button id="b3" aria-pressed="false">Ứng dụng &amp; Claude</button>
+      <button id="conn">Kết nối Mac</button>
+      <button id="night" aria-pressed="false">Ban đêm</button>
     </div>
   </div>
   <div id="turn" hidden>
@@ -107,6 +188,19 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
     <div class="t1">Xoay ngang điện thoại</div>
     <div class="t2">Tắt Khóa xoay màn hình trong Trung tâm điều khiển trước nhé</div>
   </div>
+  <div id="panel" hidden>
+    <form id="pform" class="card">
+      <div class="pt">Kết nối với máy Mac</div>
+      <label for="code">Mã kết nối (có trong file deck.command trên Mac)</label>
+      <input id="code" autocomplete="off" autocapitalize="none" spellcheck="false" inputmode="text" maxlength="40" placeholder="ví dụ: abcd2345xy">
+      <div class="prow">
+        <button type="button" id="ptest">Thử kết nối</button>
+        <button type="submit" id="psave">Lưu</button>
+        <button type="button" id="pclose">Đóng</button>
+      </div>
+      <div id="pmsg"></div>
+    </form>
+  </div>
   <div id="paused" hidden>
     <div>Đã thoát đồng hồ chờ</div>
     <button id="resume">Mở lại</button>
@@ -117,7 +211,8 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
 const $=id=>document.getElementById(id);
 const root=document.documentElement;
 const store={get(k,d){try{const v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
-let view=+store.get('view','0')||0, night=store.get('night','0')==='1', rot=false, lock=null, active=true, started=false, hideT, lastDay=-1;
+const VIEWS=[0,2,3],NV=VIEWS.length;
+let view=Math.min(NV-1,+store.get('view','0')||0), night=store.get('night','0')==='1', rot=false, lock=null, active=true, started=false, hideT, lastDay=-1;
 const pad=n=>String(n).padStart(2,'0');
 
 /* Luôn nằm ngang: nếu máy đang dựng đứng thì xoay khung 90° */
@@ -161,15 +256,14 @@ function tick(){
   sH.setAttribute('transform','rotate('+(s*6)+' 100 100)');
   mH.setAttribute('transform','rotate('+(m*6+s*.1)+' 100 100)');
   hH.setAttribute('transform','rotate('+((h%12)*30+m*.5)+' 100 100)');
-  $('ftime').innerHTML=pad(h)+'<span class="c">:</span>'+pad(m);
-  if(n.getDate()!==lastDay){lastDay=n.getDate();calendar(n);const t=fmtDate.format(n);$('fdate').textContent=t.charAt(0).toUpperCase()+t.slice(1)}
+  if(n.getDate()!==lastDay){lastDay=n.getDate();calendar(n)}
   setTimeout(tick,1000-n.getMilliseconds()+5);
 }
 
 function setView(v){
   view=v;store.set('view',String(v));
-  $('v0').classList.toggle('on',v===0);$('v1').classList.toggle('on',v===1);
-  $('b0').setAttribute('aria-pressed',v===0);$('b1').setAttribute('aria-pressed',v===1);
+  VIEWS.forEach((id,i)=>{$('v'+id).classList.toggle('on',v===i);$('b'+id).setAttribute('aria-pressed',v===i)});
+  startCrab();
   [...$('dots').children].forEach((d,i)=>d.classList.toggle('on',i===v));
 }
 function setNight(on){night=on;store.set('night',on?'1':'0');root.classList.toggle('night',on);$('night').setAttribute('aria-pressed',on)}
@@ -204,24 +298,228 @@ function exitClock(){
   if(lock){lock.release().catch(()=>{});lock=null}
   stopVideo();exitFull();$('paused').hidden=false;
 }
-function resume(){active=true;$('paused').hidden=true;goFull();keepAwake()}
+function resume(){active=true;$('paused').hidden=true;goFull();keepAwake();startCrab()}
 
 /* Chạm và vuốt (tính theo hướng ngang của khung đã xoay) */
 let p0=null;
-$('stage').addEventListener('pointerdown',e=>{p0={x:e.clientX,y:e.clientY}});
+$('stage').addEventListener('pointerdown',e=>{p0=e.target.closest('#cin,#clog')?null:{x:e.clientX,y:e.clientY}});
 $('stage').addEventListener('pointerup',e=>{
   if(!p0)return;const dx=e.clientX-p0.x,dy=e.clientY-p0.y;p0=null;
-  if(e.target.closest('button')||!active)return;
+  if(!active)return;
   if(!started){started=true;goFull();$('tapme').hidden=true}
   keepAwake();
   const lx=rot?dy:dx,ly=rot?-dx:dy;
-  if(Math.abs(lx)>50&&Math.abs(lx)>Math.abs(ly)){setView(lx<0?Math.min(1,view+1):Math.max(0,view-1));return}
+  if(Math.abs(lx)>50&&Math.abs(lx)>Math.abs(ly)){window.__sw=Date.now();setView(lx<0?Math.min(NV-1,view+1):Math.max(0,view-1));return}
+  if(e.target.closest('button,#cform,#crab'))return;
   if(Math.abs(lx)<12&&Math.abs(ly)<12){$('ui').classList.contains('hide')?showUI():hideUI()}
 });
 $('exit').addEventListener('click',exitClock);
 $('resume').addEventListener('click',resume);
 $('b0').addEventListener('click',()=>{setView(0);showUI();keepAwake()});
-$('b1').addEventListener('click',()=>{setView(1);showUI()});
+$('b2').addEventListener('click',()=>{setView(1);showUI()});
+$('b3').addEventListener('click',()=>{setView(2);hideUI()});
+
+/* ===== Bàn phím điều khiển Mac =====
+   Muốn đổi phím: sửa danh sách KEYS (a = tên lệnh, phải trùng với lệnh trong deck.command trên Mac) */
+/* Icon: trắng đặc, chi tiết nhấn màu đỏ (class a = nét đỏ, af = tô đỏ) */
+const SP='<path d="M3 9h4l5-4.5v15L7 15H3z" fill="currentColor" stroke="none"/>';
+const ICON={
+  play:'<path d="M4 5l9 7-9 7z" fill="currentColor" stroke="none"/><path class="a" d="M16 6v12M20.5 6v12" stroke-width="2.6"/>',
+  prev:'<path d="M20 5l-10 7 10 7z" fill="currentColor" stroke="none"/><path class="a" d="M5.5 5v14" stroke-width="2.6"/>',
+  next:'<path d="M4 5l10 7-10 7z" fill="currentColor" stroke="none"/><path class="a" d="M18.5 5v14" stroke-width="2.6"/>',
+  mute:SP+'<path class="a" d="M15.5 9l5.5 6M21 9l-5.5 6" stroke-width="2.6"/>',
+  vdown:SP+'<path class="a" d="M16 12h5.5" stroke-width="2.6"/>',
+  vup:SP+'<path class="a" d="M15.5 12h6M18.5 9v6" stroke-width="2.6"/>',
+  mic:'<rect x="8.5" y="2.5" width="7" height="12" rx="3.5" fill="currentColor" stroke="none"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3.5"/><circle class="af" cx="19.5" cy="4" r="2"/>',
+  moon:'<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z" fill="currentColor" stroke="none"/><circle class="af" cx="18" cy="5" r="1.6"/>'
+};
+const KEYS=[
+  {a:'playpause',l:'Phát / Dừng',i:'play'},
+  {a:'prev',l:'Bài trước',i:'prev'},
+  {a:'next',l:'Bài sau',i:'next'},
+  {a:'mute',l:'Tắt tiếng',i:'mute'},
+  {a:'voldown',l:'Giảm âm',i:'vdown'},
+  {a:'volup',l:'Tăng âm',i:'vup'},
+  {a:'mic',l:'Tắt / bật mic',i:'mic'},
+  {a:'sleep',l:'Tắt màn Mac',i:'moon'}
+];
+$('deck').innerHTML=KEYS.map(k=>'<button class="key" aria-label="'+k.l+'" title="'+k.l+'" data-a="'+k.a+'" data-l="'+k.l+'"><svg viewBox="0 0 24 24" aria-hidden="true">'+ICON[k.i]+'</svg></button>').join('');
+/* Phím mở ứng dụng (a phải trùng với lệnh trong deck.command) */
+const APPS=[
+  {a:'pr',t:'Pr',s:'PREMIERE',l:'Premiere Pro'},
+  {a:'ae',t:'Ae',s:'AFTER FX',l:'After Effects'},
+  {a:'davinci',t:'DR',s:'RESOLVE',l:'DaVinci Resolve'},
+  {a:'ps',t:'Ps',s:'PHOTOSHOP',l:'Photoshop'},
+  {a:'ai',t:'Ai',s:'ILLUSTRATOR',l:'Illustrator'}
+];
+$('apps').innerHTML=APPS.map(k=>'<button class="key app" aria-label="Mở '+k.l+'" title="Mở '+k.l+'" data-a="'+k.a+'" data-l="Mở '+k.l+'"><b>'+k.t+'</b></button>').join('');
+const ALL={};KEYS.forEach(k=>ALL[k.a]=k.l);APPS.forEach(k=>ALL[k.a]='Mở '+k.l);
+const cleanCode=c=>String(c||'').toLowerCase().replace(/[^a-z0-9]/g,'');
+let code=cleanCode(store.get('deckcode',''));
+function dstat(t,cls){document.querySelectorAll('.stat').forEach(e=>{e.textContent=t;e.className='stat '+(cls||'')})}
+function refreshStat(){dstat(code?'Đã có mã kết nối':'Chưa kết nối — bấm “Kết nối Mac”',code?'':'err')}
+async function send(action){
+  if(!code)throw new Error('nocode');
+  const r=await fetch('https://ntfy.sh/dongho-deck-'+code,{method:'POST',body:action,headers:{'Title':'deck'}});
+  if(!r.ok)throw new Error('http '+r.status);
+}
+let statT;
+async function pressKey(e){
+  const b=e.target.closest('.key');if(!b||Date.now()-(window.__sw||0)<500)return;
+  keepAwake();
+  const a=b.dataset.a,l=b.dataset.l;
+  if(!code){openPanel();return}
+  b.classList.remove('ok','err');
+  try{await send(a);b.classList.add('ok');dstat('Đã gửi: '+l,'ok')}
+  catch(err){b.classList.add('err');dstat('Không gửi được — kiểm tra mạng','err')}
+  setTimeout(()=>b.classList.remove('ok','err'),450);
+  clearTimeout(statT);statT=setTimeout(refreshStat,2500);
+}
+$('deck').addEventListener('click',pressKey);
+$('apps').addEventListener('click',pressKey);
+
+/* ===== Trò chuyện với Claude ===== */
+const clog=$('clog'),cin=$('cin'),csend=$('csend'),cmic=$('cmic');
+let sampleFn=null,canTools=false,chatCtl=null,turns=[],dict=null,listening=false,dBase='';
+function bubble(cls,t){const d=document.createElement('div');d.className='m '+cls;d.textContent=t;clog.appendChild(d);clog.scrollTop=clog.scrollHeight;return d}
+function note(t){bubble('note',t)}
+function rules(){
+  return 'Bạn là Claude, đang trò chuyện qua một màn hình điều khiển nhỏ (điện thoại nằm ngang cạnh máy Mac). '+
+  'Người dùng làm dựng phim và thiết kế với Premiere Pro, After Effects, DaVinci Resolve, Photoshop và Illustrator. '+
+  'Trả lời bằng tiếng Việt, ngắn gọn, dễ đọc trên màn hình nhỏ. Không dùng Markdown (không **, #, bảng); dùng gạch đầu dòng "•" khi cần liệt kê. '+
+  (canTools?'Bạn có công cụ mac_action để gửi lệnh tới máy Mac của người dùng (mở các ứng dụng trên, phát/dừng nhạc, đổi bài, âm lượng, mic, tắt màn hình). Chỉ dùng khi người dùng yêu cầu rõ ràng, rồi xác nhận ngắn gọn đã làm gì. ':'')+
+  'Giờ hiện tại: '+new Date().toLocaleString('vi-VN')+'.';
+}
+const macTool={
+  name:'mac_action',
+  description:'Gửi một lệnh tới máy Mac của người dùng. Trả về "ok" khi đã gửi. Lệnh: '+Object.keys(ALL).map(a=>a+' ('+ALL[a]+')').join(', ')+'.',
+  inputSchema:{type:'object',properties:{action:{type:'string',enum:Object.keys(ALL)}},required:['action']},
+  async execute(input){
+    const a=String(input&&input.action||'');
+    if(!ALL[a])throw new Error('Lệnh không hợp lệ: '+a);
+    if(!code)throw new Error('Chưa kết nối Mac — người dùng cần bấm "Kết nối Mac" và nhập mã.');
+    await send(a);dstat('Claude đã gửi: '+ALL[a],'ok');clearTimeout(statT);statT=setTimeout(refreshStat,2500);
+    return 'ok: '+ALL[a];
+  }
+};
+const ERR={rate_limited:'Claude đang bận hoặc bạn đã hết lượt dùng — thử lại sau ít phút.',not_granted:'Bạn chưa cho phép trang này dùng Claude.',sampling_disabled:'Tài khoản này không dùng được Claude ở đây.',session_expired:'Phiên đăng nhập đã hết — hãy đăng nhập lại claude.ai.',refused:'Claude không trả lời được câu này — thử hỏi cách khác.',prompt_too_large:'Cuộc trò chuyện quá dài — bấm “Cuộc trò chuyện mới”.'};
+const IC_SEND='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg>',
+      IC_STOP='<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor" stroke="none"/></svg>';
+function setBusy(on){csend.innerHTML=on?IC_STOP:IC_SEND;csend.setAttribute('aria-label',on?'Dừng':'Gửi');csend.type=on?'button':'submit'}
+setBusy(false);
+function chatOff(t){$('cnote').textContent=t;csend.disabled=true;cin.disabled=true;cmic.hidden=true;sampleFn=null;setCrab('sleep')}
+
+/* ===== Cua pixel: đi dạo, suy nghĩ khi Claude nghĩ, vỗ càng khi trả lời ===== */
+const crab=$('crab'),crabsvg=$('crabsvg'),cbub=$('cbub');
+const CLAW={open:['#.#.........#.#','#.#.........#.#','###.........###'],shut:['.#...........#.','###.........###','###.........###']};
+const BODY=['..#.........#..','...#########...','..###E###E###..','.#############.','.#############.','..###########..'];
+const LEGS=['.#.#.#...#.#.#.','#.#.#.....#.#.#'];
+let cFrame='';
+function drawCrab(claw,leg,eyes){
+  const k=claw+leg+eyes;if(k===cFrame)return;cFrame=k;
+  const rows=[...CLAW[claw],...BODY,LEGS[leg]];let s='';
+  rows.forEach((r,y)=>{for(let x=0;x<15;x++){const c=r[x];
+    if(c==='#'||(c==='E'&&!eyes))s+='<rect x="'+x+'" y="'+y+'" width="1" height="1" fill="currentColor"/>';
+    else if(c==='E')s+='<rect x="'+x+'" y="'+y+'" width="1" height="1" fill="var(--eye)"/>';}});
+  crabsvg.innerHTML=s;
+}
+const calm=matchMedia('(prefers-reduced-motion: reduce)').matches;
+let cState='walk',cUntil=0,cx=20,cdir=1,cPause=0,raf=0,lastTs=0,cT=0;
+function setCrab(s,ms){cState=s;cUntil=ms?performance.now()+ms:0;startCrab()}
+function startCrab(){if(!raf&&view===2&&!document.hidden){lastTs=0;raf=requestAnimationFrame(crabLoop)}}
+function crabLoop(ts){
+  if(view!==2||document.hidden||!active){raf=0;return}
+  const dt=lastTs?Math.min(.1,(ts-lastTs)/1000):0;lastTs=ts;cT+=dt;
+  if(cUntil&&ts>cUntil){cUntil=0;cState=sampleFn?'walk':'sleep'}
+  const W=crab.parentNode.clientWidth-crab.offsetWidth,H=crab.offsetHeight;
+  let speed=0,y=0,claw='open',leg=0,eyes=true,bub='';
+  const step=Math.floor(cT*(cState==='talk'?8:4))%2;
+  switch(cState){
+    case 'walk':
+      if(cPause>0){cPause-=dt;eyes=(cT%3)>.15}else{speed=28;leg=step;if(Math.random()<dt*.15)cPause=1+Math.random()*2}
+      break;
+    case 'think':
+      y=-Math.abs(Math.sin(cT*5))*H*.25;claw=Math.floor(cT*2)%2?'open':'shut';bub='.'.repeat(1+Math.floor(cT*3)%3);break;
+    case 'talk':
+      speed=70;leg=step;claw=step?'open':'shut';break;
+    case 'happy':
+      y=-Math.abs(Math.sin(cT*9))*H*.35;claw=step?'open':'shut';bub='♥';break;
+    case 'sad':
+      cx+=Math.sin(cT*40)*1.2;eyes=false;bub='?';claw='shut';break;
+    case 'sleep':
+      eyes=false;claw='shut';bub='z'.repeat(1+Math.floor(cT)%3);break;
+  }
+  if(calm){speed=0;y=0}
+  cx+=cdir*speed*dt;
+  if(cx>W){cx=W;cdir=-1}if(cx<0){cx=0;cdir=1}
+  drawCrab(claw,leg,eyes);
+  if(cbub.textContent!==bub)cbub.textContent=bub;
+  crab.style.transform='translate('+cx.toFixed(1)+'px,'+y.toFixed(1)+'px)';
+  raf=requestAnimationFrame(crabLoop);
+}
+crab.addEventListener('click',()=>{if(cState==='walk'||cState==='sleep')setCrab('happy',1200)});
+document.addEventListener('visibilitychange',startCrab);
+drawCrab('open',0,true);
+async function ask(){
+  const q=cin.value.trim();if(!q||!sampleFn||chatCtl)return;
+  if(listening&&dict)dict.stop().catch(()=>{});
+  cin.value='';dBase='';
+  turns.push({role:'user',content:q});bubble('u',q);
+  const b=bubble('a wait','Đang nghĩ…');
+  const ctl=chatCtl=new AbortController();setBusy(true);setCrab('think');
+  const opts={signal:ctl.signal,cache:false,onText:({text})=>{if(cState==='think')setCrab('talk');b.classList.remove('wait');b.textContent=text;clog.scrollTop=clog.scrollHeight}};
+  if(canTools)opts.tools=[macTool];
+  try{
+    const r=await sampleFn([{role:'user',content:rules()},...turns.slice(-20)],opts);
+    b.classList.remove('wait');b.textContent=r.text;turns.push({role:'assistant',content:r.text});setCrab('happy',1500);
+    if(r.truncated)note('Câu trả lời bị cắt ngắn.');
+  }catch(e){
+    const c=e&&e.code;b.classList.remove('wait');
+    if(e&&e.text){b.textContent=e.text;turns.push({role:'assistant',content:e.text})}else b.remove();
+    setCrab(c==='cancelled'?'walk':'sad',c==='cancelled'?0:1800);
+    if(c==='cancelled')note('Đã dừng.');
+    else if(c==='not_granted'||c==='sampling_disabled'||c==='not_declared'||c==='capability_disabled')chatOff(ERR[c]||'Không dùng được Claude ở đây.');
+    else note(ERR[c]||'Có lỗi kết nối — thử gửi lại.');
+  }finally{if(chatCtl===ctl){chatCtl=null;setBusy(false)}}
+}
+$('cform').addEventListener('submit',e=>{e.preventDefault();keepAwake();ask()});
+csend.addEventListener('click',()=>{if(chatCtl)chatCtl.abort()});
+$('cnew').addEventListener('click',()=>{if(chatCtl)chatCtl.abort();turns=[];[...clog.querySelectorAll('.m:not(#cnote)')].forEach(m=>m.remove())});
+cmic.addEventListener('click',()=>{
+  if(!dict)return;
+  if(listening){dict.stop().catch(()=>{});return}
+  dBase=cin.value.trim()?cin.value.trim()+' ':'';
+  dict.start().catch(e=>{if(e&&e.code==='not_granted')cmic.hidden=true});
+});
+(async()=>{
+  if(!window.claude||typeof claude.use!=='function'){chatOff('Mở trang này trong ứng dụng Claude hoặc claude.ai để trò chuyện với Claude.');return}
+  sampleFn=await claude.use('sample').catch(()=>null);
+  if(!sampleFn){chatOff('Claude chưa sẵn sàng ở đây — mở trang trong ứng dụng Claude hoặc claude.ai.');return}
+  try{const l=await sampleFn.limits();canTools=!!(l&&l.tools)}catch(e){}
+  $('cnote').textContent='Hỏi Claude bất cứ điều gì'+(canTools?', hoặc nhờ “mở Photoshop”, “tăng âm lượng”…':'.');
+  csend.disabled=false;
+  dict=await claude.use('dictation').catch(()=>null);
+  if(dict){
+    cmic.hidden=false;
+    dict.onPartial(({text})=>{cin.value=dBase+text});
+    dict.onFinal(({text})=>{dBase=dBase+text+' ';cin.value=dBase});
+    dict.onState(({state})=>{listening=state==='listening';cmic.classList.toggle('on',listening)});
+  }
+})();
+function openPanel(){$('code').value=code;$('pmsg').textContent='';$('panel').hidden=false;hideUI()}
+function closePanel(){$('panel').hidden=true}
+$('conn').addEventListener('click',openPanel);
+$('pclose').addEventListener('click',closePanel);
+$('pform').addEventListener('submit',e=>{e.preventDefault();code=cleanCode($('code').value);store.set('deckcode',code);refreshStat();closePanel()});
+$('ptest').addEventListener('click',async()=>{
+  const c=cleanCode($('code').value);if(!c){$('pmsg').textContent='Nhập mã trước đã';return}
+  const old=code;code=c;$('pmsg').textContent='Đang gửi…';
+  try{await send('ping');$('pmsg').textContent='Đã gửi. Cửa sổ Terminal trên Mac sẽ hiện dòng “ping”.'}
+  catch(e){$('pmsg').textContent='Không gửi được — kiểm tra kết nối mạng'}
+  code=old;
+});
+$('panel').addEventListener('pointerup',e=>e.stopPropagation());
+refreshStat();
 $('night').addEventListener('click',()=>{setNight(!night);showUI()});
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&started)keepAwake()});
 setInterval(()=>{if(started&&active){if(!lock)getLock();const v=$('ns');if(v&&v.paused)playVideo()}},20000);

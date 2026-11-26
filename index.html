@@ -6,6 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="app-version" content="2026-11-26.4">
 <title>Đồng hồ chờ</title>
 <style>
 /* VOICE: tĩnh lặng, như màn hình chờ khi sạc
@@ -526,6 +527,20 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
 setInterval(()=>{if(started&&active){if(!lock)getLock();const v=$('ns');if(v&&v.paused)playVideo()}},20000);
 addEventListener('resize',layout);
 addEventListener('orientationchange',()=>setTimeout(layout,150));
+
+/* Tự cập nhật (chỉ trên GitHub Pages): thấy bản mới thì tự tải lại, mã kết nối vẫn giữ nguyên */
+const VER=(document.querySelector('meta[name="app-version"]')||{}).content||'';
+async function checkUpdate(){
+  if(!location.hostname.endsWith('github.io')||document.hidden)return;
+  if(chatCtl||document.activeElement===cin||!$('panel').hidden)return;
+  try{
+    const t=await (await fetch(location.pathname+'?u='+Date.now(),{cache:'no-store'})).text();
+    const m=t.match(/name="app-version" content="([^"]+)"/);
+    if(m&&m[1]!==VER)location.replace(location.pathname+'?v='+encodeURIComponent(m[1]));
+  }catch(e){}
+}
+setTimeout(checkUpdate,4000);setInterval(checkUpdate,3*60*1000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkUpdate()});
 
 layout();setView(view);setNight(night);tick();getLock();
 }

@@ -22,7 +22,7 @@ html,body{margin:0;height:100%;background:#000;overflow:hidden;overscroll-behavi
 body{font-family:ui-rounded,"SF Pro Rounded",system-ui,-apple-system,sans-serif;color:var(--ink);-webkit-user-select:none;user-select:none}
 #stage{position:fixed;top:0;left:0;transform-origin:0 0;background:var(--bg);overflow:hidden}
 .view{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .5s}
-.view.on{opacity:1}
+.view.on{opacity:1;pointer-events:auto}
 :root.night .view{filter:brightness(.85)}
 /* Tiện ích */
 #v0{gap:calc(var(--h)*.07);padding:calc(var(--h)*.08) max(calc(var(--h)*.08),env(safe-area-inset-right)) calc(var(--h)*.08) max(calc(var(--h)*.08),env(safe-area-inset-left))}
@@ -51,7 +51,7 @@ body{font-family:ui-rounded,"SF Pro Rounded",system-ui,-apple-system,sans-serif;
 #v2{flex-direction:column;justify-content:flex-start;padding:calc(var(--h)*.05) max(calc(var(--h)*.08),env(safe-area-inset-right)) calc(var(--h)*.06) max(calc(var(--h)*.08),env(safe-area-inset-left))}
 #deckhead{align-self:stretch;display:flex;justify-content:space-between;align-items:baseline;height:calc(var(--h)*.12);padding:0 4px}
 #dclock{font-weight:700;font-size:calc(var(--h)*.08);font-variant-numeric:tabular-nums}
-.stat{color:var(--sub);font-size:calc(var(--h)*.045);font-weight:600}
+.stat{position:absolute;left:0;right:0;top:calc(var(--h)*.012);text-align:center;pointer-events:none;color:var(--sub);font-size:calc(var(--h)*.04);font-weight:600}
 .stat.ok{color:#30d158}.stat.err{color:var(--acc)}
 #deck{align-self:stretch;flex:1;min-height:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:calc(var(--h)*.04)}
 .tray{background:var(--tray);border:1px solid var(--trayb);border-radius:calc(var(--h)*.06);padding:calc(var(--h)*.03)}
@@ -69,8 +69,8 @@ body{font-family:ui-rounded,"SF Pro Rounded",system-ui,-apple-system,sans-serif;
 .dtitle{font-weight:700;font-size:calc(var(--h)*.08)}
 #v3{gap:calc(var(--h)*.03)}
 #v3 .dhead{align-items:center;gap:12px}#v3 .stat{flex:1;text-align:right}
-#r1{align-self:stretch;flex:none;display:flex;align-items:center;gap:12px}
-#r1 .stat{flex:1;text-align:right}
+#r1{align-self:stretch;flex:none;display:flex;align-items:center;justify-content:space-between;gap:12px}
+#r1 .sp{flex:none;width:var(--bs)}
 #apps{flex:none;display:grid;grid-template-columns:repeat(5,var(--as));grid-auto-rows:var(--as);gap:calc(var(--h)*.03);padding:calc(var(--h)*.025)}
 .key.app b{font-size:calc(var(--as)*.42)}
 #deck.tray{align-self:center;flex:none;margin:auto 0;grid-template-columns:repeat(4,var(--ks));grid-template-rows:none;grid-auto-rows:var(--ks);gap:calc(var(--h)*.035)}
@@ -151,11 +151,12 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
     <div class="w calw"><div id="mon"></div><div id="grid"></div></div>
   </section>
   <section class="view" id="v2" aria-label="Bàn phím">
-    <div class="dhead" style="justify-content:flex-end"><span class="stat"></span></div>
+    <span class="stat"></span>
     <div id="deck" class="tray"></div>
   </section>
   <section class="view" id="v3" aria-label="Ứng dụng và Claude">
-    <div id="r1"><div id="apps" class="tray"></div><span class="stat"></span><button id="cnew" class="sq" type="button" aria-label="Cuộc trò chuyện mới" title="Cuộc trò chuyện mới"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button></div>
+    <span class="stat"></span>
+    <div id="r1"><i class="sp"></i><div id="apps" class="tray"></div><button id="cnew" class="sq" type="button" aria-label="Cuộc trò chuyện mới" title="Cuộc trò chuyện mới"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button></div>
     <div id="chat">
       <div id="clog" aria-live="polite"><div class="m note" id="cnote">Đang kết nối Claude…</div></div>
       <div id="lane" aria-hidden="true"><div id="crab"><svg id="crabsvg" viewBox="0 0 15 10" shape-rendering="crispEdges"></svg><span id="cbub"></span></div></div>
@@ -357,7 +358,7 @@ const ALL={};KEYS.forEach(k=>ALL[k.a]=k.l);APPS.forEach(k=>ALL[k.a]='Mở '+k.l)
 const cleanCode=c=>String(c||'').toLowerCase().replace(/[^a-z0-9]/g,'');
 let code=cleanCode(store.get('deckcode',''));
 function dstat(t,cls){document.querySelectorAll('.stat').forEach(e=>{e.textContent=t;e.className='stat '+(cls||'')})}
-function refreshStat(){dstat(code?'Đã có mã kết nối':'Chưa kết nối — bấm “Kết nối Mac”',code?'':'err')}
+function refreshStat(){dstat(code?'':'Chưa kết nối — bấm “Kết nối Mac”',code?'':'err')}
 async function send(action){
   if(!code)throw new Error('nocode');
   const r=await fetch('https://ntfy.sh/dongho-deck-'+code,{method:'POST',body:action,headers:{'Title':'deck'}});
@@ -370,7 +371,7 @@ async function pressKey(e){
   const a=b.dataset.a,l=b.dataset.l;
   if(!code){openPanel();return}
   b.classList.remove('ok','err');
-  try{await send(a);b.classList.add('ok');dstat('Đã gửi: '+l,'ok')}
+  try{await send(a);b.classList.add('ok');dstat('','')}
   catch(err){b.classList.add('err');dstat('Không gửi được — kiểm tra mạng','err')}
   setTimeout(()=>b.classList.remove('ok','err'),450);
   clearTimeout(statT);statT=setTimeout(refreshStat,2500);

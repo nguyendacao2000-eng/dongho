@@ -28,7 +28,8 @@ TOPIC="dongho-deck-$CODE"
 MICFILE="$HOME/.dongho_deck_mic"
 
 # ---- Phím media (giống phím F7/F8/F9 trên bàn phím Mac) ----
-#  16 = Phát/Dừng, 17 = Bài sau, 18 = Bài trước
+#  16 = Phát/Dừng, 19 = Bài sau (F9), 20 = Bài trước (F7)
+#  (17/18 là mã next/previous cũ, nhiều trình phát bỏ qua nên không dùng)
 media_key() {
   osascript -l JavaScript <<EOF >/dev/null 2>&1
 ObjC.import('Cocoa');
@@ -40,6 +41,23 @@ function k(down){
 }
 k(true); k(false);
 EOF
+}
+
+# ---- Chuyển bài: Spotify / Apple Music đang phát thì điều khiển thẳng app,
+#      còn lại (YouTube, trình duyệt…) dùng phím media F7/F9 ----
+skip_track() {  # $1 = "next" hoặc "previous"
+  local app st
+  for app in Spotify Music; do
+    if pgrep -xq "$app"; then
+      st=$(osascript -e "tell application \"$app\" to player state as string" 2>/dev/null)
+      if [ "$st" = "playing" ]; then
+        osascript -e "tell application \"$app\" to $1 track" >/dev/null 2>&1
+        echo "   → $app: $1 track"
+        return
+      fi
+    fi
+  done
+  if [ "$1" = "next" ]; then media_key 19; else media_key 20; fi
 }
 
 # ---- Âm lượng ----
@@ -87,8 +105,8 @@ run() {
   case "$a" in
     ping)      echo "   ✓ Điện thoại đã kết nối được với máy Mac" ;;
     playpause) media_key 16 ;;
-    next)      media_key 17 ;;
-    prev)      media_key 18 ;;
+    next)      skip_track next ;;
+    prev)      skip_track previous ;;
     mute)      toggle_mute ;;
     voldown)   vol_change -6 ;;
     volup)     vol_change 6 ;;

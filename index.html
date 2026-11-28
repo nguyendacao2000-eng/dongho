@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="app-version" content="2026-11-28.1">
+<meta name="app-version" content="2026-11-28.2">
 <title>Đồng hồ chờ</title>
 <style>
 /* VOICE: tĩnh lặng, như màn hình chờ khi sạc
@@ -16,7 +16,7 @@
    LAYOUT: luôn nằm ngang (xoay bằng CSS khi máy dựng đứng), vuốt ngang để đổi màn */
 :root{color-scheme:dark;--bg:#000;--ink:#fff;--sub:#8e8e93;--card:#1c1c1e;--acc:#ff453a;--h:390px;--w:844px}
 :root{--k1:#2e2e33;--k2:#1a1a1d;--kb:#3c3c42;--tray:#0f0f11;--trayb:#26262a;--crab:#e07a5f;--eye:#111;
-  --ks:min(calc(var(--h)*.24),calc((var(--w)*.48 - var(--h)*.135)/4));--as:calc(var(--h)*.17);--bs:max(44px,calc(var(--h)*.12))}
+  --ks:min(calc(var(--h)*.255),calc((var(--w)*.66 - var(--h)*.135)/4));--as:calc(var(--h)*.17);--bs:max(44px,calc(var(--h)*.12))}
 :root.night{--ink:#c9302a;--sub:#6e1813;--card:#120303;--acc:#c9302a;--k1:#1c0505;--k2:#0e0202;--kb:#2e0909;--tray:#060101;--trayb:#1c0505;--crab:#c9302a;--eye:#000}
 *{box-sizing:border-box;min-width:0;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;height:100%;background:#000;overflow:hidden;overscroll-behavior:none;touch-action:none}
@@ -79,7 +79,10 @@ body{font-family:ui-rounded,"SF Pro Rounded",system-ui,-apple-system,sans-serif;
 #deck .key svg{width:54%;height:54%}
 #deck .key.app img{width:78%;height:78%;object-fit:contain;pointer-events:none;-webkit-user-drag:none}
 :root.night #deck .key.app img{filter:grayscale(1) brightness(.55) sepia(1) hue-rotate(-40deg) saturate(5)}
-#v2 #chat{flex:1;min-width:0}
+#v2 #chat{flex:1;min-width:0;position:relative}
+#chat.off #cform,#chat.off #cnew{display:none}
+.m.note:empty{display:none}
+#cnew{position:absolute;top:0;right:0;z-index:2;width:calc(var(--bs)*.8);height:calc(var(--bs)*.8);opacity:.75}
 button.sq{flex:none;width:var(--bs);height:var(--bs);min-height:0;padding:0;border-radius:calc(var(--h)*.035);background:linear-gradient(180deg,var(--k1),var(--k2));border:1px solid var(--kb);box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 3px 8px rgba(0,0,0,.6);color:var(--ink);display:grid;place-items:center}
 button.sq svg{width:46%;height:46%;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
 button.sq:active{transform:scale(.93)}
@@ -160,12 +163,12 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
     <span class="stat"></span>
     <div id="deck" class="tray"></div>
     <div id="chat">
-      <div id="clog" aria-live="polite"><div class="m note" id="cnote">Đang kết nối Claude…</div></div>
+      <button type="button" id="cnew" class="sq" aria-label="Cuộc trò chuyện mới" title="Cuộc trò chuyện mới"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
+      <div id="clog" aria-live="polite"><div class="m note" id="cnote"></div></div>
       <div id="lane" aria-hidden="true"><div id="crab"><svg id="crabsvg" viewBox="0 0 15 10" shape-rendering="crispEdges"></svg><span id="cbub"></span></div></div>
       <form id="cform">
-        <button type="button" id="cnew" class="sq" aria-label="Cuộc trò chuyện mới" title="Cuộc trò chuyện mới"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
         <button type="button" id="cmic" class="sq" hidden aria-label="Nói"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8.5" y="2.5" width="7" height="12" rx="3.5" fill="currentColor" stroke="none"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3.5"/></svg></button>
-        <input id="cin" autocomplete="off" enterkeyhint="send" placeholder="Hỏi Claude…">
+        <input id="cin" autocomplete="off" enterkeyhint="send" aria-label="Hỏi Claude">
         <button type="submit" id="csend" class="sq" disabled aria-label="Gửi"></button>
       </form>
     </div>
@@ -411,7 +414,7 @@ const IC_SEND='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M6 1
       IC_STOP='<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor" stroke="none"/></svg>';
 function setBusy(on){csend.innerHTML=on?IC_STOP:IC_SEND;csend.setAttribute('aria-label',on?'Dừng':'Gửi');csend.type=on?'button':'submit'}
 setBusy(false);
-function chatOff(t){$('cnote').textContent=t;csend.disabled=true;cin.disabled=true;cmic.hidden=true;sampleFn=null;setCrab('sleep')}
+function chatOff(t){$('chat').classList.add('off');$('chat').title=t;csend.disabled=true;cin.disabled=true;cmic.hidden=true;sampleFn=null;setCrab('sleep')}
 
 /* ===== Cua pixel: đi dạo, suy nghĩ khi Claude nghĩ, vỗ càng khi trả lời ===== */
 const crab=$('crab'),crabsvg=$('crabsvg'),cbub=$('cbub');
@@ -500,7 +503,6 @@ cmic.addEventListener('click',()=>{
   sampleFn=await claude.use('sample').catch(()=>null);
   if(!sampleFn){chatOff('Claude chưa sẵn sàng ở đây — mở trang trong ứng dụng Claude hoặc claude.ai.');return}
   try{const l=await sampleFn.limits();canTools=!!(l&&l.tools)}catch(e){}
-  $('cnote').textContent='Hỏi Claude bất cứ điều gì'+(canTools?', hoặc nhờ “mở Photoshop”, “tăng âm lượng”…':'.');
   csend.disabled=false;
   dict=await claude.use('dictation').catch(()=>null);
   if(dict){
